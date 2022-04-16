@@ -34,4 +34,8 @@ func main() {
 	// dnsNames := awscp.GetPublicDNS(outputs)
 	platformNames := awscp.GetPlatformName(outputs)
 
+	for _, platformName := range platformNames {
+		log.Println(platformName)
+	}
+
 }
