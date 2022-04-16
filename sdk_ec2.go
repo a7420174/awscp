@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-func DescribeEC2(cfg aws.Config, name string, tagKey string) {
+func GetReservations(cfg aws.Config, name string, tagKey string) []types.Reservation {
 	client := ec2.NewFromConfig(cfg)
 
 	var filterName, filterTag types.Filter
@@ -33,10 +33,26 @@ func DescribeEC2(cfg aws.Config, name string, tagKey string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	return output.Reservations
+}
+
+
+func DescribeEC2(outputs []types.Reservation) {
+
 	fmt.Println("################################# EC2 Instance List #################################")
-	for _, reservation := range output.Reservations {
+	for _, reservation := range outputs {
 		for _, instance := range reservation.Instances {
 			fmt.Printf("%s (%s): %s\n", *instance.InstanceId, instance.InstanceType, *instance.PublicDnsName)
 		}
 	}
+}
+
+func GetPublicDNS(outputs []types.Reservation) []string {
+	dnsNames := make([]string, 0)
+	for _, reservation := range outputs {
+		for _, instance := range reservation.Instances {
+			dnsNames = append(dnsNames, *instance.PublicDnsName)
+		}
+	}
+	return dnsNames
 }
