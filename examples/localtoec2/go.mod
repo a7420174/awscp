@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/a7420174/awscp v0.0.0-20220416133939-a53046a1ba68 // indirect
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
 	golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea // indirect
 )
