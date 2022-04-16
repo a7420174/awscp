@@ -9,6 +9,7 @@ import (
 	"log"
 )
 
+// GetReservations returns a list of reservations
 func GetReservations(cfg aws.Config, name string, tagKey string) []types.Reservation {
 	client := ec2.NewFromConfig(cfg)
 
@@ -36,7 +37,7 @@ func GetReservations(cfg aws.Config, name string, tagKey string) []types.Reserva
 	return output.Reservations
 }
 
-
+// DescribeEC2 prints the ids of the instances and the public DNS names
 func DescribeEC2(outputs []types.Reservation) {
 
 	fmt.Println("################################# EC2 Instance List #################################")
@@ -47,6 +48,7 @@ func DescribeEC2(outputs []types.Reservation) {
 	}
 }
 
+// GetPublicDNSName returns the public DNS names of the instances
 func GetPublicDNS(outputs []types.Reservation) []string {
 	dnsNames := make([]string, 0)
 	for _, reservation := range outputs {
@@ -55,4 +57,15 @@ func GetPublicDNS(outputs []types.Reservation) []string {
 		}
 	}
 	return dnsNames
+}
+
+// GetPlatformName returns the platform name of the instances
+func GetPlatformName(outputs []types.Reservation) []string {
+	platformNames := make([]string, 0)
+	for _, reservation := range outputs {
+		for _, instance := range reservation.Instances {
+			platformNames = append(platformNames, *instance.PlatformDetails)
+		}
+	}
+	return platformNames
 }

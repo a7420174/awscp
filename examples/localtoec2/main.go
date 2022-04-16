@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 
-	"fmt"
+	// "fmt"
 	"log"
 
 	"github.com/a7420174/awscp"
@@ -31,9 +31,7 @@ func main() {
 	outputs := awscp.GetReservations(cfg, name, tagKey)
 	awscp.DescribeEC2(outputs)
 
-	dnsNames := awscp.GetPublicDNS(outputs)
+	// dnsNames := awscp.GetPublicDNS(outputs)
+	platformNames := awscp.GetPlatformName(outputs)
 
-	for _, dnsName := range dnsNames {
-		fmt.Println(dnsName)
-	}
 }
