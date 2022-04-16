@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"flag"
+
 	// "fmt"
 	"log"
 
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/a7420174/awscp"
+	"github.com/aws/aws-sdk-go-v2/config"
 )
 
 var (
