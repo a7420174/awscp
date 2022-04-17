@@ -92,7 +92,7 @@ func GetPlatformDetails(cfg aws.Config, imageIds []string) []string {
 
 	platforms := make([]string, 0)
 	for _, image := range outputs.Images {
-		platforms = append(platforms, *image.PlatformDetails)
+		platforms = append(platforms, *image.Description)
 	}
 	return platforms
 }

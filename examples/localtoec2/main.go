@@ -31,17 +31,12 @@ func main() {
 	reservations := awscp.GetReservations(cfg, name, tagKey)
 	awscp.DescribeEC2(reservations)
 
-	for _, output := range reservations {
-		for _, instance := range output.Instances {
-			fmt.Printf("%v\n", instance.)
-		}
-	}
 	// dnsNames := awscp.GetPublicDNS(reservations)
 	imageIds := awscp.GetImageId(reservations)
+	platforms := awscp.GetPlatformDetails(cfg, imageIds)
 
-
-	for _, imageId := range imageIds {
-		
+	for _, os := range platforms {
+		fmt.Println(os)
 	}
 
 }
