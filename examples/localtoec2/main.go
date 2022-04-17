@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 
-	// "fmt"
+	"fmt"
 	"log"
 
 	"github.com/a7420174/awscp"
@@ -28,14 +28,20 @@ func main() {
 		log.Fatal(err)
 	}
 
-	outputs := awscp.GetReservations(cfg, name, tagKey)
-	awscp.DescribeEC2(outputs)
+	reservations := awscp.GetReservations(cfg, name, tagKey)
+	awscp.DescribeEC2(reservations)
 
-	// dnsNames := awscp.GetPublicDNS(outputs)
-	platformNames := awscp.GetPlatformName(outputs)
+	for _, output := range reservations {
+		for _, instance := range output.Instances {
+			fmt.Printf("%v\n", instance.)
+		}
+	}
+	// dnsNames := awscp.GetPublicDNS(reservations)
+	imageIds := awscp.GetImageId(reservations)
 
-	for _, platformName := range platformNames {
-		log.Println(platformName)
+
+	for _, imageId := range imageIds {
+		
 	}
 
 }

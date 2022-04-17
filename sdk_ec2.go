@@ -30,11 +30,11 @@ func GetReservations(cfg aws.Config, name string, tagKey string) []types.Reserva
 		}
 	}
 
-	output, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{Filters: []types.Filter{filterName, filterTag}})
+	outputs, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{Filters: []types.Filter{filterName, filterTag}})
 	if err != nil {
 		log.Fatal(err)
 	}
-	return output.Reservations
+	return outputs.Reservations
 }
 
 // DescribeEC2 prints the ids of the instances and the public DNS names
@@ -68,4 +68,31 @@ func GetPlatformName(outputs []types.Reservation) []string {
 		}
 	}
 	return platformNames
+}
+
+// GetImageId returns the image ids of the instances	
+func GetImageId(outputs []types.Reservation) []string {
+	imageIds := make([]string, 0)
+	for _, reservation := range outputs {
+		for _, instance := range reservation.Instances {
+			imageIds = append(imageIds, *instance.ImageId)
+		}
+	}
+	return imageIds
+}
+
+
+func GetPlatformDetails(cfg aws.Config, imageIds []string) []string {
+	client := ec2.NewFromConfig(cfg)
+
+	outputs, err := client.DescribeImages(context.TODO(), &ec2.DescribeImagesInput{ImageIds: imageIds})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	platforms := make([]string, 0)
+	for _, image := range outputs.Images {
+		platforms = append(platforms, *image.PlatformDetails)
+	}
+	return platforms
 }
