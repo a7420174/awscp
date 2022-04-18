@@ -17,13 +17,13 @@ func ConnectEC2(instacneId, dnsName, username, keypath string) *scp.Client {
 
 	err := client.Connect()
 	if err != nil {
-		log.Println("Couldn't establish a connection to the remote server ", err, "("+instacneId+")")
+		log.Println("Couldn't establish a connection to the remote server ", "("+instacneId+")")
 	}
 
 	return &client
 }
 
-func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, remotepath, permission string) {
+func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, destpath, permission string) {
 	// Connect to EC2 instance
 	client := ConnectEC2(instacneId, dnsName, username, keypath)
 
@@ -37,11 +37,13 @@ func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, remotepath
 	defer f.Close()
 
 	// Finaly, copy the file over
-	// Usage: CopyFromFile(context, file, remotePath, permission)
+	// Usage: CopyFromFile(context, file, destpath, permission)
 
-	err := client.CopyFromFile(context.TODO(), *f, remotepath, permission)
+	err := client.CopyFromFile(context.TODO(), *f, destpath, permission)
 
 	if err != nil {
 		log.Println("Error while copying file ", err)
 	}
+
+	log.Println("File copied successfully", "("+instacneId+")")
 }

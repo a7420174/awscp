@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
+	"os"
+	"sync"
 
 	"github.com/a7420174/awscp"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -28,7 +31,6 @@ func init() {
 	flag.StringVar(&keyPath, "key-path", "", "Path of key pair")
 	flag.StringVar(&destPath, "dest-path", "", "Path of destination")
 	flag.StringVar(&filePath, "file-path", "", "Path of file to be copied")
-	flag.StringVar(&remotePath, "remote-path", "", "Path of remote file to be saved")
 	flag.StringVar(&permission, "permission", "0755", "Permission of remote file: default 0755")
 }
 
@@ -40,20 +42,23 @@ func errhandler(dryrun bool) {
 	if keyPath == "" {
 		log.Fatal("Key path is empty")
 	}
+	if _, err := os.Stat(keyPath); errors.Is(err, os.ErrNotExist) {
+		log.Fatal("Invalid key path")
+	}
 	if destPath == "" {
 		log.Fatal("Destination path is empty")
 	}
 	if filePath == "" {
 		log.Fatal("File path is empty")
 	}
-	if remotePath == "" {
-		log.Fatal("Remote path is empty")
+	if _, err := os.Stat(filePath); errors.Is(err, os.ErrNotExist) {
+		log.Fatal("Invalid file path")
 	}
 }
 
 func main() {
 	flag.Parse()
-	errhandler(true)
+	errhandler(false)
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
@@ -77,12 +82,16 @@ func main() {
 	dnsNames := awscp.GetPublicDNS(reservationsRunning)
 	username := awscp.GetUsername(platfrom)
 
+	var wg sync.WaitGroup
+
 	for i := range instanceIds {
-		instanceId := instanceIds[i]
-		dnsName := dnsNames[i]
-		client := awscp.ConnectEC2(instacneId, dnsName, username, keyPath)
-		fmt.Println("Connected to", client.Host)
-		// awscp.CopyFile(cfg, instanceIds[i], dnsNames[i], username, keyPath, destPath, filePath, remotePath, permission)
+		wg.Add(1)
+		// client := awscp.ConnectEC2(instanceId, dnsName, username, keyPath)
+		// fmt.Println("Connected to", client.Host)
+		go func(i int) {
+			defer wg.Done()
+			awscp.CopyLocaltoEC2(instanceIds[i], dnsNames[i], username, keyPath, filePath, destPath, permission)
+		}(i)
 	}
-	
+	wg.Wait()
 }
