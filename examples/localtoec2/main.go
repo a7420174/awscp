@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-
 	"fmt"
 	"log"
 
@@ -14,11 +13,13 @@ import (
 var (
 	name   string
 	tagKey string
+	platfrom string
 )
 
 func init() {
 	flag.StringVar(&name, "name", "", "Name of EC2 instance")
 	flag.StringVar(&tagKey, "tag-key", "", "Tag key of EC2 instance")
+	flag.StringVar(&platfrom, "platfrom", "", "OS platform of EC2 instance: amazonlinux, ubuntu, centos, rhel, debian, suse\nif empty, the platform will be predicted")
 }
 
 func main() {
@@ -32,11 +33,12 @@ func main() {
 	awscp.DescribeEC2(reservations)
 
 	// dnsNames := awscp.GetPublicDNS(reservations)
-	imageIds := awscp.GetImageId(reservations)
-	platforms := awscp.GetPlatformDetails(cfg, imageIds)
-
-	for _, os := range platforms {
-		fmt.Println(os)
+	if platfrom == "" {
+		imageIds := awscp.GetImageId(reservations)
+		info := awscp.GetImageDescription(cfg, imageIds)
+		platfrom = awscp.GetPlatform(info)
 	}
 
+	fmt.Println("Platform:", platfrom)
+	
 }
