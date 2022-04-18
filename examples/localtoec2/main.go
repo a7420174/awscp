@@ -30,6 +30,7 @@ func main() {
 	}
 
 	reservations := awscp.GetReservations(cfg, name, tagKey)
+	
 	awscp.DescribeEC2(reservations)
 
 	// dnsNames := awscp.GetPublicDNS(reservations)
@@ -41,6 +42,6 @@ func main() {
 
 	fmt.Println("Platform:", platfrom)
 
-	
+
 
 }

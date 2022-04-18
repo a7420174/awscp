@@ -15,6 +15,7 @@ import (
 var (
 	errNoInfo     = errors.New("can't predict the platform: No platform info in the image description")
 	errMultiImage = errors.New("can't predict the platform: Multiple images used for instances found")
+	errNoRunningInstances = errors.New("can't predict the platform: No running instances found")
 )
 
 // GetReservations returns a list of reservations
@@ -45,15 +46,23 @@ func GetReservations(cfg aws.Config, name string, tagKey string) []types.Reserva
 	return outputs.Reservations
 }
 
-// DescribeEC2 prints the ids of the instances and the public DNS names
-func DescribeEC2(outputs []types.Reservation) {
 
+// DescribeEC2 prints the ids and states of the instances
+func DescribeEC2(outputs []types.Reservation) {
+	states := make([]types.InstanceStateName, 0)
 	fmt.Println("################################# EC2 Instance List #################################")
 	for _, reservation := range outputs {
 		for _, instance := range reservation.Instances {
-			fmt.Printf("%s (%s): %s\n", *instance.InstanceId, instance.InstanceType, *instance.PublicDnsName)
+			fmt.Printf("%s (%s): %v\n", *instance.InstanceId, instance.InstanceType, instance.State.Name)
+			states = append(states, instance.State.Name)
 		}
 	}
+	for _, state := range states {
+		if state == "running" {
+			return
+		}
+	}
+	log.Fatal(errNoRunningInstances)
 }
 
 // GetPublicDNSName returns the public DNS names of the instances
