@@ -72,6 +72,17 @@ func DescribeEC2(outputs []types.Reservation) {
 	log.Fatal(errNoRunningInstances)
 }
 
+// GetInstanceIds returns the instance ids of the instances
+func GetInstanceId(outputs []types.Reservation) []string {
+	instacneIds := make([]string, 0)
+	for _, reservation := range outputs {
+		for _, instance := range reservation.Instances {
+			instacneIds = append(instacneIds, *instance.InstanceId)
+		}
+	}
+	return instacneIds
+}
+
 // GetPublicDNSName returns the public DNS names of the instances
 func GetPublicDNS(outputs []types.Reservation) []string {
 	dnsNames := make([]string, 0)
