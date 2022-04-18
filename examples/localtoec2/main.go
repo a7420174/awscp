@@ -28,9 +28,9 @@ func init() {
 	flag.StringVar(&tagKey, "tag-key", "", "Tag key of EC2 instance")
 	flag.StringVar(&platfrom, "platfrom", "", "OS platform of EC2 instance: amazonlinux, ubuntu, centos, rhel, debian, suse\nif empty, the platform will be predicted")
 	flag.StringVar(&keyPath, "key-path", "", "Path of key pair")
-	flag.StringVar(&destPath, "dest-path", "", "Path of destination: if empty, the file will be copied to home directory. if dest-path ends with '/', it is regarded as a directory and file will be copied in the directory.")
+	flag.StringVar(&destPath, "dest-path", "", "Path of destination: default - home directory; if empty, the file will be copied to home directory. if dest-path ends with '/', it is regarded as a directory and file will be copied in the directory.")
 	flag.StringVar(&filePath, "file-path", "", "Path of file to be copied")
-	flag.StringVar(&permission, "permission", "0755", "Permission of remote file: default 0755")
+	flag.StringVar(&permission, "permission", "0755", "Permission of remote file: default - 0755")
 }
 
 func errhandler(dryrun bool) {
@@ -58,6 +58,7 @@ func errhandler(dryrun bool) {
 func main() {
 	flag.Parse()
 	errhandler(false)
+	fmt.Print("\n")
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
@@ -75,14 +76,15 @@ func main() {
 		info := awscp.GetImageDescription(cfg, imageIds)
 		platfrom = awscp.PredictPlatform(info)
 	}
+	fmt.Print("\n")
 	fmt.Println("Platform:", platfrom)
 
 	instanceIds := awscp.GetInstanceId(reservationsRunning)
 	dnsNames := awscp.GetPublicDNS(reservationsRunning)
 	username := awscp.GetUsername(platfrom)
 
+	fmt.Print("\n")
 	var wg sync.WaitGroup
-
 	for i := range instanceIds {
 		wg.Add(1)
 		// client := awscp.ConnectEC2(instanceId, dnsName, username, keyPath)

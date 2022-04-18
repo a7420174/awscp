@@ -57,7 +57,7 @@ func GetReservations(cfg aws.Config, name string, tagKey string, running bool) [
 // DescribeEC2 prints the ids and states of the instances
 func DescribeEC2(outputs []types.Reservation) {
 	states := make([]types.InstanceStateName, 0)
-	fmt.Println("################################# EC2 Instance List #################################")
+	fmt.Println("Instance ID (Instance Type): Status")
 	for _, reservation := range outputs {
 		for _, instance := range reservation.Instances {
 			fmt.Printf("%s (%s): %v\n", *instance.InstanceId, instance.InstanceType, instance.State.Name)

@@ -22,6 +22,8 @@ github.com/a7420174/awscp v0.0.0-20220418071828-d08f57069545 h1:0Y66YVB8OyDxK4ot
 github.com/a7420174/awscp v0.0.0-20220418071828-d08f57069545/go.mod h1:E+aD4WhJaQ6ZAMwFpyF6JshBrQyoFVetuqJ8HMTfEPw=
 github.com/a7420174/awscp v0.0.0-20220418075751-1f0cd5f90b78 h1:TezwX3jeqriheHcUDJF7qaEn7UQHqpT/a7qVdMbYKW4=
 github.com/a7420174/awscp v0.0.0-20220418075751-1f0cd5f90b78/go.mod h1:E+aD4WhJaQ6ZAMwFpyF6JshBrQyoFVetuqJ8HMTfEPw=
+github.com/a7420174/awscp v0.0.0-20220418080650-117673e9e135 h1:PvAJs9yLdarbg1ctS5td1zVWTI2udJ8Qz23cDsK9YbY=
+github.com/a7420174/awscp v0.0.0-20220418080650-117673e9e135/go.mod h1:E+aD4WhJaQ6ZAMwFpyF6JshBrQyoFVetuqJ8HMTfEPw=
 github.com/aws/aws-sdk-go-v2 v1.16.2 h1:fqlCk6Iy3bnCumtrLz9r3mJ/2gUT0pJ0wLFVIdWh+JA=
 github.com/aws/aws-sdk-go-v2 v1.16.2/go.mod h1:ytwTPBG6fXTZLxxeeCCWj2/EMYp/xDUgX+OET6TLNNU=
 github.com/aws/aws-sdk-go-v2/config v1.15.3 h1:5AlQD0jhVXlGzwo+VORKiUuogkG7pQcLJNzIzK7eodw=
