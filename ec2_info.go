@@ -13,16 +13,16 @@ import (
 )
 
 var (
-	errNoInfo     = errors.New("can't predict the platform: No platform info in the image description")
-	errMultiImage = errors.New("can't predict the platform: Multiple images used for instances found")
-	errNoRunningInstances = errors.New("can't predict the platform: No running instances found")
+	errNoInfo             = errors.New("can't predict the platform: No platform info in the image description")
+	errMultiImage         = errors.New("can't predict the platform: Multiple images used for instances found")
+	errNoRunningInstances = errors.New("no running instances found")
 )
 
 // GetReservations returns a list of reservations
-func GetReservations(cfg aws.Config, name string, tagKey string) []types.Reservation {
+func GetReservations(cfg aws.Config, name string, tagKey string, running bool) []types.Reservation {
 	client := ec2.NewFromConfig(cfg)
 
-	var filterName, filterTag types.Filter
+	var filterName, filterTag, filterStatus types.Filter
 	if name != "" {
 		tag1 := "tag:Name"
 		filterName = types.Filter{
@@ -39,13 +39,20 @@ func GetReservations(cfg aws.Config, name string, tagKey string) []types.Reserva
 		}
 	}
 
-	outputs, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{Filters: []types.Filter{filterName, filterTag}})
+	if running {
+		tag3 := "instance-state-name"
+		filterStatus = types.Filter{
+			Name:   &tag3,
+			Values: []string{"running"},
+		}
+	}
+
+	outputs, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{Filters: []types.Filter{filterName, filterTag, filterStatus}})
 	if err != nil {
 		log.Fatal(err)
 	}
 	return outputs.Reservations
 }
-
 
 // DescribeEC2 prints the ids and states of the instances
 func DescribeEC2(outputs []types.Reservation) {
@@ -130,4 +137,25 @@ func PredictPlatform(info []string) string {
 		log.Fatal(errNoInfo)
 	}
 	return platform
+}
+
+func GetUsername(platform string) string {
+	var username string
+	switch platform {
+	case "amazonlinux":
+		username = "ec2-user"
+	case "ubuntu":
+		username = "ubuntu"
+	case "centos":
+		username = "ec2-user"
+	case "rhel":
+		username = "ec2-user"
+	case "debian":
+		username = "admin"
+	case "suse":
+		username = "ec2-user"
+	default:
+		username = "ec2-user"
+	}
+	return username
 }
