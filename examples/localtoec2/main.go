@@ -36,9 +36,11 @@ func main() {
 	if platfrom == "" {
 		imageIds := awscp.GetImageId(reservations)
 		info := awscp.GetImageDescription(cfg, imageIds)
-		platfrom = awscp.GetPlatform(info)
+		platfrom = awscp.PredictPlatform(info)
 	}
 
 	fmt.Println("Platform:", platfrom)
+
 	
+
 }

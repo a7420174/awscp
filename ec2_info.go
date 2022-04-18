@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	errNoInfo = errors.New("Can't predict the platform: No platform info in the image description")
-	errMultiImage = errors.New("Can't predict the platform: Multiple images used for instances found")
+	errNoInfo     = errors.New("can't predict the platform: No platform info in the image description")
+	errMultiImage = errors.New("can't predict the platform: Multiple images used for instances found")
 )
 
 // GetReservations returns a list of reservations
@@ -67,7 +67,7 @@ func GetPublicDNS(outputs []types.Reservation) []string {
 	return dnsNames
 }
 
-// GetImageId returns the image ids of the instances	
+// GetImageId returns the image ids of the instances
 func GetImageId(outputs []types.Reservation) []string {
 	imageIds := make([]string, 0)
 	for _, reservation := range outputs {
@@ -77,7 +77,6 @@ func GetImageId(outputs []types.Reservation) []string {
 	}
 	return imageIds
 }
-
 
 func GetImageDescription(cfg aws.Config, imageIds []string) []string {
 	client := ec2.NewFromConfig(cfg)
@@ -93,7 +92,6 @@ func GetImageDescription(cfg aws.Config, imageIds []string) []string {
 	}
 	return info
 }
-
 
 func PredictPlatform(info []string) string {
 	if len(info) > 1 {
