@@ -14,13 +14,12 @@ import (
 )
 
 var (
-	name   string
-	tagKey string
-	platfrom string
-	keyPath string
-	destPath string
-	filePath string
-	remotePath string
+	name       string
+	tagKey     string
+	platfrom   string
+	keyPath    string
+	destPath   string
+	filePath   string
 	permission string
 )
 
@@ -29,7 +28,7 @@ func init() {
 	flag.StringVar(&tagKey, "tag-key", "", "Tag key of EC2 instance")
 	flag.StringVar(&platfrom, "platfrom", "", "OS platform of EC2 instance: amazonlinux, ubuntu, centos, rhel, debian, suse\nif empty, the platform will be predicted")
 	flag.StringVar(&keyPath, "key-path", "", "Path of key pair")
-	flag.StringVar(&destPath, "dest-path", "", "Path of destination")
+	flag.StringVar(&destPath, "dest-path", "", "Path of destination: defaulth path is home directory")
 	flag.StringVar(&filePath, "file-path", "", "Path of file to be copied")
 	flag.StringVar(&permission, "permission", "0755", "Permission of remote file: default 0755")
 }
@@ -45,9 +44,9 @@ func errhandler(dryrun bool) {
 	if _, err := os.Stat(keyPath); errors.Is(err, os.ErrNotExist) {
 		log.Fatal("Invalid key path")
 	}
-	if destPath == "" {
-		log.Fatal("Destination path is empty")
-	}
+	// if destPath == "" {
+	// 	log.Fatal("Destination path is empty")
+	// }
 	if filePath == "" {
 		log.Fatal("File path is empty")
 	}
@@ -66,7 +65,7 @@ func main() {
 	}
 
 	reservations := awscp.GetReservations(cfg, name, tagKey, false)
-	
+
 	awscp.DescribeEC2(reservations)
 
 	reservationsRunning := awscp.GetReservations(cfg, name, tagKey, true)

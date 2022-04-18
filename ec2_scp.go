@@ -4,6 +4,8 @@ import (
 	"context"
 	"log"
 	"os"
+	"regexp"
+	"strings"
 
 	scp "github.com/bramvdbogaerde/go-scp"
 	"github.com/bramvdbogaerde/go-scp/auth"
@@ -26,6 +28,12 @@ func ConnectEC2(instacneId, dnsName, username, keypath string) *scp.Client {
 func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, destpath, permission string) {
 	// Connect to EC2 instance
 	client := ConnectEC2(instacneId, dnsName, username, keypath)
+
+	filename := strings.Split(filepath, "/")[len(strings.Split(filepath, "/"))-1]
+	matched, _ := regexp.MatchString("/$", destpath)
+	if destpath == "" || matched {
+		destpath = destpath + filename
+	}
 
 	// Open a file
 	f, _ := os.Open(filepath)
