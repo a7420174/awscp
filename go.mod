@@ -5,12 +5,10 @@ go 1.18
 require (
 	github.com/aws/aws-sdk-go-v2 v1.16.2
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.35.1
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 )
 
-require (
-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
-	golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea // indirect
-)
+require golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea // indirect
 
 require (
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.9 // indirect
