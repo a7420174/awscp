@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/a7420174/awscp"
@@ -16,6 +17,7 @@ import (
 var (
 	name       string
 	tagKey     string
+	ids        string
 	platfrom   string
 	keyPath    string
 	destPath   string
@@ -26,6 +28,7 @@ var (
 func init() {
 	flag.StringVar(&name, "name", "", "Name of EC2 instance")
 	flag.StringVar(&tagKey, "tag-key", "", "Tag key of EC2 instance")
+	flag.StringVar(&ids, "instance-ids", "", "EC2 instance IDs: e.g. i-1234567890abcdef0,i-1234567890abcdef1")
 	flag.StringVar(&platfrom, "platfrom", "", "OS platform of EC2 instance: amazonlinux, ubuntu, centos, rhel, debian, suse\nif empty, the platform will be predicted")
 	flag.StringVar(&keyPath, "key-path", "", "Path of key pair")
 	flag.StringVar(&destPath, "dest-path", "", "Path of destination: default - home directory; if empty, the file will be copied to home directory. if dest-path ends with '/', it is regarded as a directory and file will be copied in the directory.")
@@ -60,12 +63,14 @@ func main() {
 	errhandler(false)
 	fmt.Print("\n")
 
+	ids_slice := strings.Split(ids, ",")
+
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	reservations := awscp.GetReservations(cfg, name, tagKey, false)
+	reservations := awscp.GetReservations(cfg, name, tagKey, ids_slice, false)
 
 	awscp.DescribeEC2(reservations)
 
