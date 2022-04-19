@@ -1,5 +1,5 @@
-github.com/a7420174/awscp v0.0.0-20220418082158-dfb7a42ed075 h1:S63581HJYhXCSSnWp/NNxPDQ8bHYKY7i7ntJJwmKjUs=
-github.com/a7420174/awscp v0.0.0-20220418082158-dfb7a42ed075/go.mod h1:E+aD4WhJaQ6ZAMwFpyF6JshBrQyoFVetuqJ8HMTfEPw=
+github.com/a7420174/awscp v0.0.0-20220419143109-7c10d234f4ec h1:9b11sm4hRSDrr6+djwPT9t5Dr29awDUueza+wZsASrg=
+github.com/a7420174/awscp v0.0.0-20220419143109-7c10d234f4ec/go.mod h1:zSHXklx/uhtEIA+jSKkmdzR6AGn0wIKMV784EswH3z8=
 github.com/aws/aws-sdk-go-v2 v1.16.2 h1:fqlCk6Iy3bnCumtrLz9r3mJ/2gUT0pJ0wLFVIdWh+JA=
 github.com/aws/aws-sdk-go-v2 v1.16.2/go.mod h1:ytwTPBG6fXTZLxxeeCCWj2/EMYp/xDUgX+OET6TLNNU=
 github.com/aws/aws-sdk-go-v2/config v1.15.3 h1:5AlQD0jhVXlGzwo+VORKiUuogkG7pQcLJNzIzK7eodw=

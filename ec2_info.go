@@ -19,7 +19,7 @@ var (
 )
 
 // GetReservations returns a list of reservations
-func GetReservations(cfg aws.Config, name string, tagKey string, running bool) []types.Reservation {
+func GetReservations(cfg aws.Config, name string, tagKey string, ids []string, running bool) []types.Reservation {
 	client := ec2.NewFromConfig(cfg)
 
 	var filterName, filterTag, filterStatus types.Filter
@@ -47,7 +47,7 @@ func GetReservations(cfg aws.Config, name string, tagKey string, running bool) [
 		}
 	}
 
-	outputs, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{Filters: []types.Filter{filterName, filterTag, filterStatus}})
+	outputs, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{Filters: []types.Filter{filterName, filterTag, filterStatus}, InstanceIds: ids})
 	if err != nil {
 		log.Fatal(err)
 	}
