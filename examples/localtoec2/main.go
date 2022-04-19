@@ -64,7 +64,6 @@ func main() {
 	fmt.Print("\n")
 
 	ids_slice := strings.Split(ids, ",")
-	fmt.Println(len(ids_slice))
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
