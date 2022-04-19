@@ -74,7 +74,7 @@ func main() {
 
 	awscp.DescribeEC2(reservations)
 
-	reservationsRunning := awscp.GetReservations(cfg, name, tagKey, true)
+	reservationsRunning := awscp.GetReservations(cfg, name, tagKey, ids_slice, true)
 
 	if platfrom == "" {
 		imageIds := awscp.GetImageId(reservationsRunning)

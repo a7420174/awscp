@@ -47,7 +47,15 @@ func GetReservations(cfg aws.Config, name string, tagKey string, ids []string, r
 		}
 	}
 
-	outputs, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{Filters: []types.Filter{filterName, filterTag, filterStatus}, InstanceIds: ids})
+	var (
+		outputs *ec2.DescribeInstancesOutput
+		err     error
+	)
+	if len(ids) > 0 {
+		outputs, err = client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{Filters: []types.Filter{filterName, filterTag, filterStatus}, InstanceIds: ids})
+	} else {
+		outputs, err = client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{Filters: []types.Filter{filterName, filterTag, filterStatus}})
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
