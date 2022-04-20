@@ -19,7 +19,7 @@ func ConnectEC2(instacneId, dnsName, username, keypath string) *scp.Client {
 
 	err := client.Connect()
 	if err != nil {
-		log.Println("Couldn't establish a connection to the remote server ", "("+instacneId+")")
+		log.Println("Couldn't establish a connection to the remote server ", "["+instacneId+"]")
 	}
 
 	return &client
@@ -53,7 +53,7 @@ func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, destpath, 
 		log.Println("Error while copying file ", err)
 	}
 
-	log.Println("File copied successfully", "("+instacneId+")")
+	log.Println("File ", "("+filename+")", " copied successfully", "["+instacneId+"]")
 }
 
 func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, destpath, permission string) {
@@ -84,5 +84,5 @@ func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, destpath, 
 		log.Println("Error while copying file ", err)
 	}
 
-	log.Println("File copied successfully", "("+instacneId+")")
+	log.Println("File ", "("+filename+")", " copied successfully", "["+instacneId+"]")
 }
