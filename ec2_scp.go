@@ -53,7 +53,7 @@ func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, destpath, 
 		log.Println("Error while copying file ", err)
 	}
 
-	log.Println("File ", "("+filename+")", " copied successfully", "["+instacneId+"]")
+	log.Println("File "+"("+filename+")"+" copied successfully", "["+instacneId+"]")
 }
 
 func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, destpath, permission string) {
@@ -84,5 +84,5 @@ func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, destpath, 
 		log.Println("Error while copying file ", err)
 	}
 
-	log.Println("File ", "("+filename+")", " copied successfully", "["+instacneId+"]")
+	log.Println("File "+"("+filename+")"+" copied successfully", "["+instacneId+"]")
 }
