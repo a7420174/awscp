@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	errNoInfo             = errors.New("can't predict the platform: No platform info in the image description")
+	errNoInfo             = errors.New("can't predict the platform: No platform info in the image description. Please specify the platform")
 	errMultiImage         = errors.New("can't predict the platform: Multiple images used for instances found")
 	errNoRunningInstances = errors.New("no running instances found")
 )

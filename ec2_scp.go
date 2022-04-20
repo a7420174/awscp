@@ -25,14 +25,17 @@ func ConnectEC2(instacneId, dnsName, username, keypath string) *scp.Client {
 	return &client
 }
 
-func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, destpath, permission string) {
+func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, remoteDir, permission string) {
 	// Connect to EC2 instance
 	client := ConnectEC2(instacneId, dnsName, username, keypath)
 
 	filename := strings.Split(filepath, "/")[len(strings.Split(filepath, "/"))-1]
-	matched, _ := regexp.MatchString("/$", destpath)
-	if destpath == "" || matched {
-		destpath = destpath + filename
+	matched, _ := regexp.MatchString("/$", remoteDir)
+	var remotePath string
+	if remoteDir == "" || matched {
+		remotePath = remoteDir + filename
+	} else {
+		remotePath = remoteDir + "/" + filename
 	}
 
 	// Open a file
@@ -45,9 +48,9 @@ func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, destpath, 
 	defer f.Close()
 
 	// Finaly, copy the file over
-	// Usage: CopyFromFile(context, file, destpath, permission)
+	// Usage: CopyFromFile(context, file, remotePath, permission)
 
-	err := client.CopyFromFile(context.TODO(), *f, destpath, permission)
+	err := client.CopyFromFile(context.TODO(), *f, remotePath, permission)
 
 	if err != nil {
 		log.Println("Error while copying file ", err)

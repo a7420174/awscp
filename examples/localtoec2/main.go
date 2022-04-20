@@ -20,7 +20,7 @@ var (
 	ids        string
 	platfrom   string
 	keyPath    string
-	destPath   string
+	remoteDir   string
 	permission string
 )
 
@@ -30,7 +30,7 @@ func init() {
 	flag.StringVar(&ids, "instance-ids", "", "EC2 instance IDs: e.g. i-1234567890abcdef0,i-1234567890abcdef1")
 	flag.StringVar(&platfrom, "platfrom", "", "OS platform of EC2 instances: amazonlinux, ubuntu, centos, rhel, debian, suse\nif empty, the platform will be predicted")
 	flag.StringVar(&keyPath, "key-path", "", "Path of key pair")
-	flag.StringVar(&destPath, "dest-path", "", "Path of destination: default - home directory; if empty, the file will be copied to home directory. if dest-path ends with '/', it is regarded as a directory and file will be copied in the directory.")
+	flag.StringVar(&remoteDir, "remote-dir", "", "Path of remote directory where files are copied: default - home directory, e.g. /home/ec2-user/dir = dir")
 	flag.StringVar(&permission, "permission", "0755", "Permission of remote file: default - 0755")
 }
 
@@ -45,7 +45,7 @@ func errhandler(dryrun bool) {
 	if _, err := os.Stat(keyPath); errors.Is(err, os.ErrNotExist) {
 		log.Fatal("Invalid key path")
 	}
-	// if destPath == "" {
+	// if remoteDir == "" {
 	// 	log.Fatal("Destination path is empty")
 	// }
 	if flag.Arg(0) == "" {
@@ -61,7 +61,7 @@ func errhandler(dryrun bool) {
 func main() {
 	// Custom usage
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage of %s: [flags] [file1] [file2] ...\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage: %s [flags] [file1] [file2] ...\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "[file1] [file2] ...: File to be copied\n\n")
 		fmt.Fprintf(os.Stderr, "Flags:\n")
 		flag.PrintDefaults()
@@ -90,7 +90,7 @@ func main() {
 		platfrom = awscp.PredictPlatform(info)
 	}
 	fmt.Print("\n")
-	fmt.Println("Platform:", platfrom)
+	fmt.Println("OS Platform:", platfrom)
 
 	instanceIds := awscp.GetInstanceId(reservationsRunning)
 	dnsNames := awscp.GetPublicDNS(reservationsRunning)
@@ -105,7 +105,7 @@ func main() {
 		go func(i int) {
 			defer wg.Done()
 			for _, filePath := range files {
-				awscp.CopyLocaltoEC2(instanceIds[i], dnsNames[i], username, keyPath, filePath, destPath, permission)
+				awscp.CopyLocaltoEC2(instanceIds[i], dnsNames[i], username, keyPath, filePath, remoteDir, permission)
 			}
 		}(i)
 	}
