@@ -53,7 +53,7 @@ func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, remoteDir,
 	err := client.CopyFromFile(context.TODO(), *f, remotePath, permission)
 
 	if err != nil {
-		log.Println("Error while copying file ", err)
+		log.Fatalln("Error while copying file ", err)
 	}
 
 	log.Println("File "+"("+filename+")"+" copied successfully", "["+instacneId+"]")
