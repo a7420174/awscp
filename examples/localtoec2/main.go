@@ -20,7 +20,7 @@ var (
 	ids        string
 	platfrom   string
 	keyPath    string
-	remoteDir   string
+	remoteDir  string
 	permission string
 )
 
@@ -30,7 +30,7 @@ func init() {
 	flag.StringVar(&ids, "instance-ids", "", "EC2 instance IDs: e.g. i-1234567890abcdef0,i-1234567890abcdef1")
 	flag.StringVar(&platfrom, "platfrom", "", "OS platform of EC2 instances: amazonlinux, ubuntu, centos, rhel, debian, suse\nif empty, the platform will be predicted")
 	flag.StringVar(&keyPath, "key-path", "", "Path of key pair")
-	flag.StringVar(&remoteDir, "remote-dir", "", "Path of remote directory where files are copied: default - home directory, e.g. /home/ec2-user/dir = dir")
+	flag.StringVar(&remoteDir, "remote-dir", "", "Path of remote directory which files are copied to: default - home directory, e.g. /home/{username}/dir = dir")
 	flag.StringVar(&permission, "permission", "0755", "Permission of remote file: default - 0755")
 }
 

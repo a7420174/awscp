@@ -59,18 +59,22 @@ func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, remoteDir,
 	log.Println("File "+"("+filename+")"+" copied successfully", "["+instacneId+"]")
 }
 
-func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, destpath, permission string) {
+func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, localDir string) {
 	// Connect to EC2 instance
 	client := ConnectEC2(instacneId, dnsName, username, keypath)
 
 	filename := strings.Split(filepath, "/")[len(strings.Split(filepath, "/"))-1]
-	matched, _ := regexp.MatchString("/$", destpath)
-	if destpath == "" || matched {
-		destpath = destpath + filename
+	matched, _ := regexp.MatchString("/$", localDir)
+	var localPath string
+	if localDir == "" || matched {
+		os.Mkdir(localDir + instacneId, 0775)
+		localPath = localDir + instacneId + "/" + filename
+	} else {
+		os.Mkdir(localDir + "/" + instacneId, 0775)
+		localPath = localDir + "/" + instacneId + "/" + filename
 	}
-
 	// Open a file
-	f, _ := os.Open(destpath)
+	f, _ := os.Open(localPath)
 
 	// Close client connection after the file has been copied
 	defer client.Close()
@@ -78,13 +82,10 @@ func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, destpath, 
 	// Close the file after it has been copied
 	defer f.Close()
 
-	// Finaly, copy the file over
-	// Usage: CopyFromFile(context, file, destpath, permission)
-
 	err := client.CopyFromRemote(context.TODO(), f, filepath)
 
 	if err != nil {
-		log.Println("Error while copying file ", err)
+		log.Fatalln("Error while copying file ", err)
 	}
 
 	log.Println("File "+"("+filename+")"+" copied successfully", "["+instacneId+"]")

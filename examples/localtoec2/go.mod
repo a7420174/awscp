@@ -3,7 +3,7 @@ module github.com/a7420174/awscp/examples/localtoec2
 go 1.18
 
 require (
-	github.com/a7420174/awscp v0.0.0-20220420162246-7684e64a63c1
+	github.com/a7420174/awscp v0.0.0-20220420162551-9e6578929b83
 	github.com/aws/aws-sdk-go-v2/config v1.15.3
 )
 
