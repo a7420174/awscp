@@ -3,7 +3,7 @@ module github.com/a7420174/awscp/examples/ec2tolocal
 go 1.18
 
 require (
-	github.com/a7420174/awscp v0.0.0-20220420162551-9e6578929b83
+	github.com/a7420174/awscp v0.0.0-20220422164204-93fd9694778b
 	github.com/aws/aws-sdk-go-v2/config v1.15.3
 )
 
@@ -21,6 +21,6 @@ require (
 	github.com/aws/smithy-go v1.11.2 // indirect
 	github.com/bramvdbogaerde/go-scp v1.2.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
-	golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea // indirect
+	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
+	golang.org/x/sys v0.0.0-20220422013727-9388b58f7150 // indirect
 )

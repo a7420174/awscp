@@ -66,15 +66,18 @@ func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, localDir s
 	filename := strings.Split(filepath, "/")[len(strings.Split(filepath, "/"))-1]
 	matched, _ := regexp.MatchString("/$", localDir)
 	var localPath string
-	if localDir == "" || matched {
-		os.Mkdir(localDir + instacneId, 0775)
+	if matched {
+		os.Mkdir(localDir+instacneId, 0775)
 		localPath = localDir + instacneId + "/" + filename
 	} else {
-		os.Mkdir(localDir + "/" + instacneId, 0775)
+		os.Mkdir(localDir+"/"+instacneId, 0775)
 		localPath = localDir + "/" + instacneId + "/" + filename
 	}
 	// Open a file
-	f, _ := os.Open(localPath)
+	f, err := os.OpenFile(localPath, os.O_CREATE|os.O_WRONLY, 0775)
+	if err != nil {
+		log.Fatal("Couldn't open the output file")
+	}
 
 	// Close client connection after the file has been copied
 	defer client.Close()
@@ -82,7 +85,7 @@ func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, localDir s
 	// Close the file after it has been copied
 	defer f.Close()
 
-	err := client.CopyFromRemote(context.TODO(), f, filepath)
+	err = client.CopyFromRemote(context.TODO(), f, filepath)
 
 	if err != nil {
 		log.Fatalln("Error while copying file ", err)
