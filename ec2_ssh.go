@@ -1,6 +1,7 @@
 package awscp
 
 import (
+	"bytes"
 	"context"
 	"log"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+// ConnectEC2 connects to an EC2 instance using SSH
 func ConnectEC2(instacneId, dnsName, username, keypath string) *scp.Client {
 	clientConfig, _ := auth.PrivateKey(username, keypath, ssh.InsecureIgnoreHostKey())
 
@@ -19,12 +21,50 @@ func ConnectEC2(instacneId, dnsName, username, keypath string) *scp.Client {
 
 	err := client.Connect()
 	if err != nil {
-		log.Println("Couldn't establish a connection to the remote server ", "["+instacneId+"]")
+		log.Fatalln("Couldn't establish a connection to the remote server ", "["+instacneId+"]")
 	}
 
 	return &client
 }
 
+func EC2RunCommand(instacneId, dnsName, username, keypath, command string, verbose bool) string {
+	// Connect to EC2 instance
+	clientConfig, _ := auth.PrivateKey(username, keypath, ssh.InsecureIgnoreHostKey())
+	client, err := ssh.Dial("tcp", dnsName+":22", &clientConfig)
+	if err != nil {
+		log.Fatalln("Error while running command ", err)
+	}
+
+	// Close client connection after the file has been copied
+	defer client.Close()
+
+	// Run command
+	session, err := client.NewSession()
+	if err != nil {
+		log.Fatalln("Error while running command ", err)
+	}
+
+	defer session.Close()
+
+	var b bytes.Buffer  // import "bytes"
+	session.Stdout = &b // get output
+	// you can also pass what gets input to the stdin, allowing you to pipe
+	// content from client to server
+	//      session.Stdin = bytes.NewBufferString("My input")
+
+	// Finally, run the command
+	err = session.Run(command)
+	if err != nil {
+		log.Fatalln("Error while running command ", err)
+	}
+
+	if verbose {
+		log.Println("Command executed successfully", "["+instacneId+"]")
+	}
+	return b.String()
+}
+
+// CopyLocalToEC2 copies a local file to an EC2 instance
 func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, remoteDir, permission string) {
 	// Connect to EC2 instance
 	client := ConnectEC2(instacneId, dnsName, username, keypath)
@@ -59,6 +99,7 @@ func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, remoteDir,
 	log.Println("File "+"("+filename+")"+" copied successfully", "["+instacneId+"]")
 }
 
+// CopyEC2ToLocal copies a file from an EC2 instance to local
 func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, localDir string) {
 	// Connect to EC2 instance
 	client := ConnectEC2(instacneId, dnsName, username, keypath)

@@ -59,8 +59,8 @@ func errhandler(dryrun bool) {
 func main() {
 	// Custom usage
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s [flags] [local dir]\n\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "[local dir]: directory path which files is copied to\n\n")
+		fmt.Fprintf(os.Stderr, "Usage: %s [flags] [local-dir]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "[local-dir]: directory path which files is copied to\nkey-path, local-dir must be specified\n\n")
 		fmt.Fprintf(os.Stderr, "Flags:\n")
 		flag.PrintDefaults()
 	}
@@ -104,7 +104,8 @@ func main() {
 			defer wg.Done()
 			if remoteFile != "" {
 				awscp.CopyEC2toLocal(instanceIds[i], dnsNames[i], username, keyPath, remoteFile, dirPath)
-			}
+			} else {
+				
 			// for _, filePath := range files {
 			// 	awscp.CopyLocaltoEC2(instanceIds[i], dnsNames[i], username, keyPath, dirPath, remoteDir)
 			// }

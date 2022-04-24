@@ -3,7 +3,7 @@ module github.com/a7420174/awscp/examples/ec2tolocal
 go 1.18
 
 require (
-	github.com/a7420174/awscp v0.0.0-20220422164204-93fd9694778b
+	github.com/a7420174/awscp v0.0.0-20220422171052-2e70f7993cd9
 	github.com/aws/aws-sdk-go-v2/config v1.15.3
 )
 
