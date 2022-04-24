@@ -3,11 +3,11 @@ module github.com/a7420174/awscp/examples/localtoec2
 go 1.18
 
 require (
-	github.com/a7420174/awscp v0.0.0-20220420162551-9e6578929b83
+	github.com/a7420174/awscp v0.0.0-20220424063229-a61effc0b088
 	github.com/aws/aws-sdk-go-v2/config v1.15.3
 )
 
-require github.com/aws/aws-sdk-go-v2/service/ec2 v1.35.1 // indirect
+require github.com/aws/aws-sdk-go-v2/service/ec2 v1.36.0 // indirect
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.16.2 // indirect
@@ -24,7 +24,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
-	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
+	golang.org/x/sys v0.0.0-20220422013727-9388b58f7150 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
