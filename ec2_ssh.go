@@ -65,11 +65,8 @@ func EC2RunCommand(instacneId, dnsName, username, keypath, command string, verbo
 }
 
 // CopyLocalToEC2 copies a local file to an EC2 instance
-func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, remoteDir, permission string) {
-	// Connect to EC2 instance
-	client := ConnectEC2(instacneId, dnsName, username, keypath)
-
-	filename := strings.Split(filepath, "/")[len(strings.Split(filepath, "/"))-1]
+func CopyLocaltoEC2(client *scp.Client, instacneId, filePath, remoteDir, permission string) {
+	filename := strings.Split(filePath, "/")[len(strings.Split(filePath, "/"))-1]
 	matched, _ := regexp.MatchString("/$", remoteDir)
 	var remotePath string
 	if remoteDir == "" || matched {
@@ -79,7 +76,7 @@ func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, remoteDir,
 	}
 
 	// Open a file
-	f, _ := os.Open(filepath)
+	f, _ := os.Open(filePath)
 
 	// Close client connection after the file has been copied
 	defer client.Close()
@@ -100,11 +97,8 @@ func CopyLocaltoEC2(instacneId, dnsName, username, keypath, filepath, remoteDir,
 }
 
 // CopyEC2ToLocal copies a file from an EC2 instance to local
-func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, localDir string) {
-	// Connect to EC2 instance
-	client := ConnectEC2(instacneId, dnsName, username, keypath)
-
-	filename := strings.Split(filepath, "/")[len(strings.Split(filepath, "/"))-1]
+func CopyEC2toLocal(client *scp.Client, instacneId, filePath, localDir string) {
+	filename := strings.Split(filePath, "/")[len(strings.Split(filePath, "/"))-1]
 	matched, _ := regexp.MatchString("/$", localDir)
 	var localPath string
 	if matched {
@@ -117,7 +111,7 @@ func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, localDir s
 	// Open a file
 	f, err := os.OpenFile(localPath, os.O_CREATE|os.O_WRONLY, 0775)
 	if err != nil {
-		log.Fatal("Couldn't open the output file")
+		log.Fatalln("Couldn't open the output file:", err)
 	}
 
 	// Close client connection after the file has been copied
@@ -126,10 +120,10 @@ func CopyEC2toLocal(instacneId, dnsName, username, keypath, filepath, localDir s
 	// Close the file after it has been copied
 	defer f.Close()
 
-	err = client.CopyFromRemote(context.TODO(), f, filepath)
+	err = client.CopyFromRemote(context.TODO(), f, filePath)
 
 	if err != nil {
-		log.Fatalln("Error while copying file ", err)
+		log.Fatalln("Error while copying file:", err)
 	}
 
 	log.Println("File "+"("+filename+")"+" copied successfully", "["+instacneId+"]")

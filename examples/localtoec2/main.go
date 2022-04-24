@@ -99,15 +99,16 @@ func main() {
 	fmt.Print("\n")
 	var wg sync.WaitGroup
 	for i := range instanceIds {
-		wg.Add(1)
 		// client := awscp.ConnectEC2(instanceId, dnsName, username, keyPath)
 		// fmt.Println("Connected to", client.Host)
-		go func(i int) {
-			defer wg.Done()
-			for _, filePath := range files {
-				awscp.CopyLocaltoEC2(instanceIds[i], dnsNames[i], username, keyPath, filePath, remoteDir, permission)
-			}
-		}(i)
+		client := awscp.ConnectEC2(instanceIds[i], dnsNames[i], username, keyPath)
+		for _, filePath := range files {
+			wg.Add(1)
+			go func(i int, filePath string) {
+				defer wg.Done()
+				awscp.CopyLocaltoEC2(client, instanceIds[i], filePath, remoteDir, permission)
+			}(i, filePath)
+		}
 	}
 	wg.Wait()
 }

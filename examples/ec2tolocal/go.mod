@@ -3,7 +3,7 @@ module github.com/a7420174/awscp/examples/ec2tolocal
 go 1.18
 
 require (
-	github.com/a7420174/awscp v0.0.0-20220422171052-2e70f7993cd9
+	github.com/a7420174/awscp v0.0.0-20220424050325-64c0f76d261e
 	github.com/aws/aws-sdk-go-v2/config v1.15.3
 )
 
@@ -14,7 +14,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.9 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.3 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.10 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.35.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.36.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.11.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.16.3 // indirect

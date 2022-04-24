@@ -102,13 +102,18 @@ func main() {
 		// fmt.Println("Connected to", client.Host)
 		go func(i int) {
 			defer wg.Done()
+			var stdout string
 			if remoteFile != "" {
 				awscp.CopyEC2toLocal(instanceIds[i], dnsNames[i], username, keyPath, remoteFile, dirPath)
 			} else {
-				
-			// for _, filePath := range files {
-			// 	awscp.CopyLocaltoEC2(instanceIds[i], dnsNames[i], username, keyPath, dirPath, remoteDir)
-			// }
+				stdout = awscp.EC2RunCommand(instanceIds[i], dnsNames[i], username, keyPath, "ls -p | grep -v /", true)
+				remoteFiles := strings.Split(stdout, "\n")
+				for _, remoteFile := range remoteFiles {
+					if remoteFile != "" {
+						awscp.CopyEC2toLocal(instanceIds[i], dnsNames[i], username, keyPath, remoteFile, dirPath)
+					}
+				}
+			}
 		}(i)
 	}
 	wg.Wait()
