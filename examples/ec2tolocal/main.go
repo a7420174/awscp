@@ -112,21 +112,25 @@ func main() {
 			} else {
 				dirList := strings.Split(awscp.EC2RunCommand(instanceIds[i], dnsNames[i], username, keyPath, "find "+remoteDir+" -type d| grep -v '/\\.'", false), "\n")
 				remoteSubDirs := dirList[1:]
-				fmt.Println("Making directories on", instanceIds[i])
+				fmt.Println("Making directories named", instanceIds[i])
+				err := os.Mkdir(filepath.Join(dirPath, instanceIds[i]), 0755)
+				if err != nil {
+					log.Fatal(err)
+				}
 				for _, remoteSubDir := range remoteSubDirs {
 					remoteSubDir = strings.Replace(remoteSubDir, dirList[0]+"/", "", 1)
 					err := os.Mkdir(filepath.Join(dirPath, instanceIds[i], remoteSubDir), 0755)
 					if err != nil && !os.IsExist(err) {
 						log.Fatal(err)
 					}
-					remoteFiles := strings.Split(awscp.EC2RunCommand(instanceIds[i], dnsNames[i], username, keyPath, "find "+remoteDir+" -type f| grep -v '/\\.'", false), "\n")
-					for _, filePath := range remoteFiles {
-						if filePath != "" {
-							localFilePath := strings.Replace(filePath, dirList[0]+"/", "", 1)
-							client := awscp.ConnectEC2(instanceIds[i], dnsNames[i], username, keyPath)
-							defer client.Close()
-							awscp.CopyEC2toLocal(client, instanceIds[i], filepath.Join(dirPath, instanceIds[i], localFilePath), filePath)
-						}
+				}
+				remoteFiles := strings.Split(awscp.EC2RunCommand(instanceIds[i], dnsNames[i], username, keyPath, "find "+remoteDir+" -type f| grep -v '/\\.'", false), "\n")
+				for _, filePath := range remoteFiles {
+					if filePath != "" {
+						localFilePath := strings.Replace(filePath, dirList[0]+"/", "", 1)
+						client := awscp.ConnectEC2(instanceIds[i], dnsNames[i], username, keyPath)
+						defer client.Close()
+						awscp.CopyEC2toLocal(client, instanceIds[i], filepath.Join(dirPath, instanceIds[i], localFilePath), filePath)
 					}
 				}
 			}

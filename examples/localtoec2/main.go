@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -22,6 +23,7 @@ var (
 	keyPath    string
 	remoteDir  string
 	permission string
+	recursive  bool
 )
 
 func init() {
@@ -32,6 +34,7 @@ func init() {
 	flag.StringVar(&keyPath, "key-path", "", "Path of key pair")
 	flag.StringVar(&remoteDir, "remote-dir", "", "Path of remote directory which files are copied to: default - home directory, e.g. /home/{username}/dir = dir")
 	flag.StringVar(&permission, "permission", "0755", "Permission of remote file: default - 0755")
+	flag.BoolVar(&recursive, "recursive", false, "Copy files recursively")
 }
 
 func errhandler(dryrun bool) {
@@ -40,20 +43,29 @@ func errhandler(dryrun bool) {
 		return
 	}
 	if keyPath == "" {
-		log.Fatal("Key path is empty")
+		log.Fatalln("Key path is empty")
 	}
 	if _, err := os.Stat(keyPath); errors.Is(err, os.ErrNotExist) {
-		log.Fatal("Invalid key path")
+		log.Fatalln("Invalid key path")
 	}
-	// if remoteDir == "" {
-	// 	log.Fatal("Destination path is empty")
-	// }
-	if flag.Arg(0) == "" {
-		log.Fatal("File path is empty")
-	}
-	for _, filePath := range flag.Args() {
-		if _, err := os.Stat(filePath); errors.Is(err, os.ErrNotExist) {
-			log.Fatal("Invalid file path")
+	if recursive {
+		if flag.Arg(0) == "" {
+			log.Fatalln("Directory path is empty")
+		}
+		if len(flag.Args()) > 1 {
+			log.Fatalln("Too many arguments")
+		}
+		if _, err := os.Stat(flag.Arg(0)); errors.Is(err, os.ErrNotExist) {
+			log.Fatalln("Directory does not exist")
+		}
+	} else {
+		if flag.Arg(0) == "" {
+			log.Fatalln("File path is empty")
+		}
+		for _, filePath := range flag.Args() {
+			if _, err := os.Stat(filePath); errors.Is(err, os.ErrNotExist) {
+				log.Fatalln("File does not exist:", filePath)
+			}
 		}
 	}
 }
@@ -61,8 +73,10 @@ func errhandler(dryrun bool) {
 func main() {
 	// Custom usage
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s [flags] [file1] [file2] ...\n\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "[file1] [file2] ...: File to be copied\n\n")
+		fmt.Fprintf(os.Stderr, "Usage: %s [flags] [File1] [File2] ...\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "       %s [flags] -recursive [Dir]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "[File1] [File2] ...: File path to be copied\n")
+		fmt.Fprintf(os.Stderr, "[Dir] ...: Directory path to be copied\n\n")
 		fmt.Fprintf(os.Stderr, "Flags:\n")
 		flag.PrintDefaults()
 	}
@@ -70,12 +84,38 @@ func main() {
 	errhandler(false)
 	fmt.Print("\n")
 
-	files := flag.Args()
+	var files []string
+	if recursive {
+		absDir, _ := filepath.Abs(flag.Arg(0))
+		files, _ = func(root string) ([]string, error) {
+			var files []string
+			err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+				if strings.HasPrefix(info.Name(), ".") && info.IsDir() {
+					return filepath.SkipDir
+				}
+				if !info.IsDir() && !strings.HasPrefix(info.Name(), ".") {
+					files = append(files, path)
+				}
+				return nil
+			})
+			return files, err
+		}(absDir)
+	} else {
+		files = make([]string, 0)
+		for _, filePath := range flag.Args() {
+			absPath, _ := filepath.Abs(filePath)
+			files = append(files, absPath)
+		}
+	}
+	// for _, filePath := range files {
+	// 	fmt.Println("File:", filePath)
+	// }
+
 	ids_slice := strings.Split(ids, ",")
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 
 	reservations := awscp.GetReservations(cfg, name, tagKey, ids_slice, false)

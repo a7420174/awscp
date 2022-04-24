@@ -88,10 +88,7 @@ func ConnectEC2(instanceId, dnsName, username, keyPath string) *scp.Client {
 }
 
 // CopyLocalToEC2 copies a local file to an EC2 instance
-func CopyLocaltoEC2(client *scp.Client, instanceId, filePath, remoteDir, permission string) {
-	filename := filepath.Base(filePath)
-	remotePath := filepath.Join(remoteDir, filename)
-
+func CopyLocaltoEC2(client *scp.Client, instanceId, filePath, remotePath, permission string) {
 	// Open a file
 	f, _ := os.Open(filePath)
 
@@ -106,8 +103,8 @@ func CopyLocaltoEC2(client *scp.Client, instanceId, filePath, remoteDir, permiss
 	if err != nil {
 		log.Fatalln("Error while copying file ", err)
 	}
-
-	log.Println("File "+"("+filename+")"+" copied successfully", "["+instanceId+"]")
+	
+	log.Println("File "+"("+filePath+")"+" copied successfully", "["+instanceId+"]")
 }
 
 // CopyEC2ToLocal copies a file from an EC2 instance to local
@@ -126,5 +123,5 @@ func CopyEC2toLocal(client *scp.Client, instanceId, filePath, remotePath string)
 		log.Fatalln("Error while copying file:", err)
 	}
 
-	log.Println("File "+"("+filePath+")"+" copied successfully", "["+instanceId+"]")
+	log.Println("File "+"("+remotePath+")"+" copied successfully", "["+instanceId+"]")
 }
