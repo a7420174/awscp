@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"sync"
 
 	scp "github.com/bramvdbogaerde/go-scp"
 	"github.com/bramvdbogaerde/go-scp/auth"
@@ -14,22 +15,22 @@ import (
 )
 
 // ConnectEC2 connects to an EC2 instance using SSH
-func ConnectEC2(instacneId, dnsName, username, keypath string) *scp.Client {
-	clientConfig, _ := auth.PrivateKey(username, keypath, ssh.InsecureIgnoreHostKey())
+func ConnectEC2(instanceId, dnsName, username, keyPath string) *scp.Client {
+	clientConfig, _ := auth.PrivateKey(username, keyPath, ssh.InsecureIgnoreHostKey())
 
 	client := scp.NewClient(dnsName+":22", &clientConfig)
 
 	err := client.Connect()
 	if err != nil {
-		log.Fatalln("Couldn't establish a connection to the remote server ", "["+instacneId+"]")
+		log.Fatalln("Couldn't establish a connection to the remote server ", "["+instanceId+"]")
 	}
 
 	return &client
 }
 
-func EC2RunCommand(instacneId, dnsName, username, keypath, command string, verbose bool) string {
+func EC2RunCommand(instanceId, dnsName, username, keyPath, command string, verbose bool) string {
 	// Connect to EC2 instance
-	clientConfig, _ := auth.PrivateKey(username, keypath, ssh.InsecureIgnoreHostKey())
+	clientConfig, _ := auth.PrivateKey(username, keyPath, ssh.InsecureIgnoreHostKey())
 	client, err := ssh.Dial("tcp", dnsName+":22", &clientConfig)
 	if err != nil {
 		log.Fatalln("Error while running command ", err)
@@ -59,13 +60,36 @@ func EC2RunCommand(instacneId, dnsName, username, keypath, command string, verbo
 	}
 
 	if verbose {
-		log.Println("Command executed successfully", "["+instacneId+"]")
+		log.Println("Command executed successfully", "["+instanceId+"]")
 	}
 	return b.String()
 }
 
+func GetFilesRecursive(instanceId, dnsName, username, keyPath, remoteDir string) []string {
+	var remoteFiles []string
+	var getFiles func(dirPath string)
+	var wg sync.WaitGroup
+	defer wg.Wait()
+	getFiles = func(dirPath string) {
+		defer wg.Done()
+		files := strings.Split(EC2RunCommand(instanceId, dnsName, username, keyPath, "ls -p "+dirPath+" | grep -v /", true), "\n")
+		remoteFiles = append(remoteFiles, files...)
+		directories := strings.Split(EC2RunCommand(instanceId, dnsName, username, keyPath, "ls -p "+dirPath+" | grep /", true), "\n")
+		for _, directory := range directories {
+			if directory != "" {
+				wg.Add(1)
+				go getFiles(dirPath + directory)
+			}
+		}
+	}
+	wg.Add(1)
+	go getFiles(remoteDir)
+
+	return remoteFiles
+}
+
 // CopyLocalToEC2 copies a local file to an EC2 instance
-func CopyLocaltoEC2(client *scp.Client, instacneId, filePath, remoteDir, permission string) {
+func CopyLocaltoEC2(client *scp.Client, instanceId, filePath, remoteDir, permission string) {
 	filename := strings.Split(filePath, "/")[len(strings.Split(filePath, "/"))-1]
 	matched, _ := regexp.MatchString("/$", remoteDir)
 	var remotePath string
@@ -77,7 +101,7 @@ func CopyLocaltoEC2(client *scp.Client, instacneId, filePath, remoteDir, permiss
 
 	// Open a file
 	f, _ := os.Open(filePath)
-	
+
 	// Close the file after it has been copied
 	defer f.Close()
 
@@ -90,20 +114,20 @@ func CopyLocaltoEC2(client *scp.Client, instacneId, filePath, remoteDir, permiss
 		log.Fatalln("Error while copying file ", err)
 	}
 
-	log.Println("File "+"("+filename+")"+" copied successfully", "["+instacneId+"]")
+	log.Println("File "+"("+filename+")"+" copied successfully", "["+instanceId+"]")
 }
 
 // CopyEC2ToLocal copies a file from an EC2 instance to local
-func CopyEC2toLocal(client *scp.Client, instacneId, filePath, localDir string) {
+func CopyEC2toLocal(client *scp.Client, instanceId, filePath, localDir string) {
 	filename := strings.Split(filePath, "/")[len(strings.Split(filePath, "/"))-1]
 	matched, _ := regexp.MatchString("/$", localDir)
 	var localPath string
 	if matched {
-		os.Mkdir(localDir+instacneId, 0775)
-		localPath = localDir + instacneId + "/" + filename
+		os.Mkdir(localDir+instanceId, 0775)
+		localPath = localDir + instanceId + "/" + filename
 	} else {
-		os.Mkdir(localDir+"/"+instacneId, 0775)
-		localPath = localDir + "/" + instacneId + "/" + filename
+		os.Mkdir(localDir+"/"+instanceId, 0775)
+		localPath = localDir + "/" + instanceId + "/" + filename
 	}
 	// Open a file
 	f, err := os.OpenFile(localPath, os.O_CREATE|os.O_WRONLY, 0775)
@@ -120,5 +144,5 @@ func CopyEC2toLocal(client *scp.Client, instacneId, filePath, localDir string) {
 		log.Fatalln("Error while copying file:", err)
 	}
 
-	log.Println("File "+"("+filename+")"+" copied successfully", "["+instacneId+"]")
+	log.Println("File "+"("+filename+")"+" copied successfully", "["+instanceId+"]")
 }

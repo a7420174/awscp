@@ -101,14 +101,15 @@ func main() {
 	for i := range instanceIds {
 		// client := awscp.ConnectEC2(instanceId, dnsName, username, keyPath)
 		// fmt.Println("Connected to", client.Host)
-		client := awscp.ConnectEC2(instanceIds[i], dnsNames[i], username, keyPath)
-		for _, filePath := range files {
-			wg.Add(1)
-			go func(i int, filePath string) {
-				defer wg.Done()
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			for _, filePath := range files {
+				client := awscp.ConnectEC2(instanceIds[i], dnsNames[i], username, keyPath)
+				defer client.Close()
 				awscp.CopyLocaltoEC2(client, instanceIds[i], filePath, remoteDir, permission)
-			}(i, filePath)
-		}
+			}
+		}(i)
 	}
 	wg.Wait()
 }
