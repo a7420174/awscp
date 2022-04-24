@@ -85,8 +85,9 @@ func main() {
 	fmt.Print("\n")
 
 	var files []string
+	var absDir string
 	if recursive {
-		absDir, _ := filepath.Abs(flag.Arg(0))
+		absDir, _ = filepath.Abs(flag.Arg(0))
 		files, _ = func(root string) ([]string, error) {
 			var files []string
 			err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
@@ -147,7 +148,11 @@ func main() {
 			for _, filePath := range files {
 				client := awscp.ConnectEC2(instanceIds[i], dnsNames[i], username, keyPath)
 				defer client.Close()
-				awscp.CopyLocaltoEC2(client, instanceIds[i], filePath, remoteDir, permission)
+				if recursive {
+					awscp.CopyLocaltoEC2(client, instanceIds[i], filePath, strings.Replace(filePath, absDir+"/", "", 1), permission)
+				} else {
+					awscp.CopyLocaltoEC2(client, instanceIds[i], filePath, filepath.Join(remoteDir, filepath.Base(filePath)), permission)
+				}
 			}
 		}(i)
 	}

@@ -5,7 +5,6 @@ import (
 	"context"
 	"log"
 	"os"
-	"path/filepath"
 
 	scp "github.com/bramvdbogaerde/go-scp"
 	"github.com/bramvdbogaerde/go-scp/auth"
@@ -103,7 +102,7 @@ func CopyLocaltoEC2(client *scp.Client, instanceId, filePath, remotePath, permis
 	if err != nil {
 		log.Fatalln("Error while copying file ", err)
 	}
-	
+
 	log.Println("File "+"("+filePath+")"+" copied successfully", "["+instanceId+"]")
 }
 
