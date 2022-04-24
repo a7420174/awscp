@@ -149,7 +149,8 @@ func main() {
 				client := awscp.ConnectEC2(instanceIds[i], dnsNames[i], username, keyPath)
 				defer client.Close()
 				if recursive {
-					awscp.CopyLocaltoEC2(client, instanceIds[i], filePath, strings.Replace(filePath, absDir+"/", "", 1), permission)
+					awscp.EC2RunCommand(instanceIds[i], dnsNames[i], username, keyPath, "mkdir -p "+filepath.Dir(filepath.Join(remoteDir, strings.Replace(filePath, absDir+"/", "", 1))), false)
+					awscp.CopyLocaltoEC2(client, instanceIds[i], filePath, filepath.Join(remoteDir, strings.Replace(filePath, absDir+"/", "", 1)), permission)
 				} else {
 					awscp.CopyLocaltoEC2(client, instanceIds[i], filePath, filepath.Join(remoteDir, filepath.Base(filePath)), permission)
 				}
