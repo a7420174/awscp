@@ -4,7 +4,11 @@
 
 **awscp** is built using `github.com/bramvdbogaerde/go-scp`, `golang.org/x/crypto/ssh`, and `github.com/aws/aws-sdk-go-v2` module.
 
-# Examples
+## Prerequisite
+
+Get your AWS access keys from the IAM console and enter them in `credentials` or `config` file under `.aws` folder
+
+## Examples
 
 **localtoec2**: helps to distribute files (or directory using `-recursive`) in Local machine to multiple EC2 machines. A binary file is available in **Releases**.
 
