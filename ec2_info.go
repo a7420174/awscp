@@ -114,6 +114,7 @@ func GetImageId(outputs []types.Reservation) []string {
 	return imageIds
 }
 
+// GetImageDescription returns the image description of the instances
 func GetImageDescription(cfg aws.Config, imageIds []string) []string {
 	client := ec2.NewFromConfig(cfg)
 
@@ -129,6 +130,7 @@ func GetImageDescription(cfg aws.Config, imageIds []string) []string {
 	return info
 }
 
+// PredictPlatform predicts the platform of the instances
 func PredictPlatform(info []string) string {
 	if len(info) > 1 {
 		log.Fatal(errMultiImage)
@@ -159,6 +161,7 @@ func PredictPlatform(info []string) string {
 	return platform
 }
 
+// GetUserName returns the user name according to the platform
 func GetUsername(platform string) string {
 	var username string
 	switch platform {

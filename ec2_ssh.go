@@ -95,8 +95,6 @@ func CopyLocaltoEC2(client *scp.Client, instanceId, filePath, remotePath, permis
 	defer f.Close()
 
 	// Finaly, copy the file over
-	// Usage: CopyFromFile(context, file, remotePath, permission)
-
 	err := client.CopyFromFile(context.TODO(), *f, remotePath, permission)
 
 	if err != nil {
@@ -108,6 +106,7 @@ func CopyLocaltoEC2(client *scp.Client, instanceId, filePath, remotePath, permis
 
 // CopyEC2ToLocal copies a file from an EC2 instance to local
 func CopyEC2toLocal(client *scp.Client, instanceId, filePath, remotePath string) {
+	// Open a file
 	f, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0775)
 	if err != nil {
 		log.Fatalln("Couldn't open the output file:", err)
