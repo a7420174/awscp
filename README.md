@@ -40,7 +40,7 @@ Flags:
 ```
 Usage: ec2tolocal [flags] [local-dir]
 
-[local-dir]: directory path which files is copied to (required)
+[local-dir]: directory path which files are copied to (required)
 
 Flags:
   -instance-ids string
