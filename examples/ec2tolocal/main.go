@@ -53,7 +53,7 @@ func errhandler(dryrun bool) {
 		log.Fatal("Too many arguments")
 	}
 	if _, err := os.Stat(flag.Arg(0)); errors.Is(err, os.ErrNotExist) {
-		log.Fatal("Invalid directory path")
+		log.Fatal("Directory does not exist")
 	}
 }
 

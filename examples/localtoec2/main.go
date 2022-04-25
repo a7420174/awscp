@@ -108,9 +108,6 @@ func main() {
 			files = append(files, absPath)
 		}
 	}
-	// for _, filePath := range files {
-	// 	fmt.Println("File:", filePath)
-	// }
 
 	ids_slice := strings.Split(ids, ",")
 
@@ -140,8 +137,6 @@ func main() {
 	fmt.Print("\n")
 	var wg sync.WaitGroup
 	for i := range instanceIds {
-		// client := awscp.ConnectEC2(instanceId, dnsName, username, keyPath)
-		// fmt.Println("Connected to", client.Host)
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
