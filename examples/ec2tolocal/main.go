@@ -30,7 +30,7 @@ func init() {
 	flag.StringVar(&tagKey, "tag-key", "", "Tag key of EC2 instances")
 	flag.StringVar(&ids, "instance-ids", "", "EC2 instance IDs: e.g. i-1234567890abcdef0,i-1234567890abcdef1")
 	flag.StringVar(&platfrom, "platfrom", "", "OS platform of EC2 instances: amazonlinux, ubuntu, centos, rhel, debian, suse\nif empty, the platform will be predicted")
-	flag.StringVar(&keyPath, "key-path", "", "Path of key pair")
+	flag.StringVar(&keyPath, "key-path", "", "Path of key pair (required)")
 	flag.StringVar(&remoteDir, "remote-dir", "", "Path of remote directory which files are copied from: relative path - home directory, e.g. /home/{username}/dir = dir")
 	flag.StringVar(&remoteFile, "remote-file", "", "Path of remote file: relative path - home directory, e.g. /home/{username}/file.txt = file.txt")
 }
@@ -61,7 +61,7 @@ func main() {
 	// Custom usage
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [flags] [local-dir]\n\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "[local-dir]: directory path which files is copied to\nkey-path, local-dir must be specified\n\n")
+		fmt.Fprintf(os.Stderr, "[local-dir]: directory path which files is copied to (required)\n\n")
 		fmt.Fprintf(os.Stderr, "Flags:\n")
 		flag.PrintDefaults()
 	}
