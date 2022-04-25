@@ -6,7 +6,7 @@
 
 # Examples
 
-**localtoec2**: helps to distribute files in Local machine (or directory using `-recursive`) to multiple EC2 machines. A binary file is available in **Releases**.
+**localtoec2**: helps to distribute files (or directory using `-recursive`) in Local machine to multiple EC2 machines. A binary file is available in **Releases**.
 
 ```
 Usage: localtoec2 [flags] [File1] [File2] ...
