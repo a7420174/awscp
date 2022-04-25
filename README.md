@@ -1,11 +1,11 @@
 # awscp
 
-**awscp** provides functions that check EC2 info and transfer files between Local and EC2 with SSH protocal.
+**awscp** is Go module providing functions that check EC2 info and transfer files between Local and EC2 with SSH protocal.
 **awscp** is built using `github.com/bramvdbogaerde/go-scp`, `golang.org/x/crypto/ssh`, and `github.com/aws/aws-sdk-go-v2` module.
 
 # Examples
 
-**localtoec2**: helps to distribute files in Local machine (or directory using `-recursive`) to multiple EC2 machines.
+**localtoec2**: helps to distribute files in Local machine (or directory using `-recursive`) to multiple EC2 machines. A binary file is available in **Releases**.
 
 ```
 Usage: localtoec2 [flags] [File1] [File2] ...
@@ -34,10 +34,10 @@ Flags:
         Tag key of EC2 instances
 ```
 
-**ec2tolocal**: helps to bring remote files (or directory) in EC2 machines to Local machine. Files to be copied must have same paths throughout machines. Files in each machine will be saved in directory named each instance id.
+**ec2tolocal**: helps to bring remote files (or directory) in EC2 machines to Local machine. Files to be copied must have same paths throughout machines. Files in each machine will be saved in directory named each instance id. A binary file is available in **Releases**.
 
 ```
-Usage: /tmp/go-build2938549694/b001/exe/ec2tolocal [flags] [local-dir]
+Usage: ec2tolocal [flags] [local-dir]
 
 [local-dir]: directory path which files is copied to (required)
 
