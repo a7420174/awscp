@@ -61,7 +61,7 @@ func main() {
 	// Custom usage
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [flags] [local-dir]\n\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "[local-dir]: directory path which files is copied to (required)\n\n")
+		fmt.Fprintf(os.Stderr, "[local-dir]: directory path which files are copied to (required)\n\n")
 		fmt.Fprintf(os.Stderr, "Flags:\n")
 		flag.PrintDefaults()
 	}
