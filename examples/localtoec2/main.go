@@ -19,7 +19,7 @@ var (
 	name       string
 	tagKey     string
 	ids        string
-	platfrom   string
+	platform   string
 	keyPath    string
 	remoteDir  string
 	permission string
@@ -30,7 +30,7 @@ func init() {
 	flag.StringVar(&name, "name", "", "Name of EC2 instances")
 	flag.StringVar(&tagKey, "tag-key", "", "Tag key of EC2 instances")
 	flag.StringVar(&ids, "instance-ids", "", "EC2 instance IDs: e.g. i-1234567890abcdef0,i-1234567890abcdef1")
-	flag.StringVar(&platfrom, "platfrom", "", "OS platform of EC2 instances: amazonlinux, ubuntu, centos, rhel, debian, suse\nif empty, the platform will be predicted")
+	flag.StringVar(&platform, "platform", "", "OS platform of EC2 instances: amazonlinux, ubuntu, centos, rhel, debian, suse\nif empty, the platform will be predicted")
 	flag.StringVar(&keyPath, "key-path", "", "Path of key pair (required)")
 	flag.StringVar(&remoteDir, "remote-dir", "", "Path of remote directory which files are copied to: default - home directory, e.g. /home/{username}/dir = dir")
 	flag.StringVar(&permission, "permission", "0755", "Permission of remote file: default - 0755")
@@ -122,17 +122,17 @@ func main() {
 
 	reservationsRunning := awscp.GetReservations(cfg, name, tagKey, ids_slice, true)
 
-	if platfrom == "" {
+	if platform == "" {
 		imageIds := awscp.GetImageId(reservationsRunning)
 		info := awscp.GetImageDescription(cfg, imageIds)
-		platfrom = awscp.PredictPlatform(info)
+		platform = awscp.PredictPlatform(info)
 	}
 	fmt.Print("\n")
-	fmt.Println("OS Platform:", platfrom)
+	fmt.Println("OS Platform:", platform)
 
 	instanceIds := awscp.GetInstanceId(reservationsRunning)
 	dnsNames := awscp.GetPublicDNS(reservationsRunning)
-	username := awscp.GetUsername(platfrom)
+	username := awscp.GetUsername(platform)
 
 	fmt.Print("\n")
 	var wg sync.WaitGroup
