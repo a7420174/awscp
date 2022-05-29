@@ -12,12 +12,12 @@ import (
 )
 
 // EC2RunCommand runs a command on an EC2 instance
-func EC2RunCommand(instanceId, dnsName, username, keyPath, command string, verbose bool) string {
+func EC2RunCommand(instanceId, dnsName, username, keyPath, command string, verbose bool) *bytes.Buffer {
 	// Connect to EC2 instance
 	clientConfig, _ := auth.PrivateKey(username, keyPath, ssh.InsecureIgnoreHostKey())
 	client, err := ssh.Dial("tcp", dnsName+":22", &clientConfig)
 	if err != nil {
-		log.Fatalln("Error while running command ", err)
+		log.Fatalln("Error while running command ", err, "["+instanceId+"]")
 	}
 
 	// Close client connection after the file has been copied
@@ -26,7 +26,7 @@ func EC2RunCommand(instanceId, dnsName, username, keyPath, command string, verbo
 	// Run command
 	session, err := client.NewSession()
 	if err != nil {
-		log.Fatalln("Error while running command ", err)
+		log.Fatalln("Error while running command ", err, "["+instanceId+"]")
 	}
 
 	defer session.Close()
@@ -40,13 +40,13 @@ func EC2RunCommand(instanceId, dnsName, username, keyPath, command string, verbo
 	// Finally, run the command
 	err = session.Run(command)
 	if err != nil {
-		log.Fatalln("Error while running command ", err)
+		log.Fatalln("Error while running command ", err, "["+instanceId+"]")
 	}
 
 	if verbose {
 		log.Println("Command executed successfully", "["+instanceId+"]")
 	}
-	return b.String()
+	return &b
 }
 
 // func GetFilesRecursive(instanceId, dnsName, username, keyPath, remoteDir string) []string {
