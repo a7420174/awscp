@@ -12,41 +12,45 @@ import (
 )
 
 // EC2RunCommand runs a command on an EC2 instance
-func EC2RunCommand(instanceId, dnsName, username, keyPath, command string, verbose bool) *bytes.Buffer {
+func EC2RunCommand(instanceId, dnsName, username, keyPath, command string, verbose bool) (*bytes.Buffer, *bytes.Buffer) {
 	// Connect to EC2 instance
 	clientConfig, _ := auth.PrivateKey(username, keyPath, ssh.InsecureIgnoreHostKey())
-	client, err := ssh.Dial("tcp", dnsName+":22", &clientConfig)
-	if err != nil {
-		log.Fatalln("Error while running command ", err, "["+instanceId+"]")
+	client, errDial := ssh.Dial("tcp", dnsName+":22", &clientConfig)
+	if errDial != nil {
+		log.Println("Error while running command ", errDial, "["+instanceId+"]")
 	}
 
 	// Close client connection after the file has been copied
 	defer client.Close()
 
 	// Run command
-	session, err := client.NewSession()
-	if err != nil {
-		log.Fatalln("Error while running command ", err, "["+instanceId+"]")
+	session, errSession := client.NewSession()
+	if errSession != nil {
+		log.Println("Error while running command ", errSession, "["+instanceId+"]")
 	}
 
 	defer session.Close()
 
-	var b bytes.Buffer  // import "bytes"
-	session.Stdout = &b // get output
+	var b1 bytes.Buffer // import "bytes"
+	var b2 bytes.Buffer // import "bytes"
+
+	session.Stdout = &b1 // get output
+
+	session.Stderr = &b2 // get error
 	// you can also pass what gets input to the stdin, allowing you to pipe
 	// content from client to server
 	//      session.Stdin = bytes.NewBufferString("My input")
 
 	// Finally, run the command
-	err = session.Run(command)
-	if err != nil {
-		log.Fatalln("Error while running command ", err, "["+instanceId+"]")
+	errRun := session.Run(command)
+	if errRun != nil {
+		log.Println("Error while running command ", errRun, "["+instanceId+"]")
 	}
 
-	if verbose {
+	if verbose && errDial == nil && errSession == nil && errRun == nil {
 		log.Println("Command executed successfully", "["+instanceId+"]")
 	}
-	return &b
+	return &b1, &b2
 }
 
 // func GetFilesRecursive(instanceId, dnsName, username, keyPath, remoteDir string) []string {
